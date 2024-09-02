@@ -6,4 +6,6 @@ import lombok.experimental.UtilityClass;
 public class PropertiesPath {
 
   public static final String BASE_PATH = "chat";
+
+  public static final String MONGO = BASE_PATH + ".mongo";
 }

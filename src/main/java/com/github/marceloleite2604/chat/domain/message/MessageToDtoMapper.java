@@ -1,10 +1,11 @@
 package com.github.marceloleite2604.chat.domain.message;
 
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,7 +14,7 @@ public class MessageToDtoMapper {
 
   public static final ZoneOffset STANDARD_ZONE_OFFSET = ZoneOffset.UTC;
 
-  public MessageDto mapTo(Message message) {
+  public Mono<MessageDto> mapTo(Message message) {
     final var id = message.getId()
         .toString();
 
@@ -21,15 +22,16 @@ public class MessageToDtoMapper {
         .toInstant(STANDARD_ZONE_OFFSET)
         .toEpochMilli();
 
-    return MessageDto.builder()
-        .id(id)
-        .time(time)
-        .user(message.getUser())
-        .content(message.getContent())
-        .build();
+    final var messageDto = MessageDto.builder()
+      .id(id)
+      .time(time)
+      .user(message.getUser())
+      .content(message.getContent())
+      .build();
+    return Mono.just(messageDto);
   }
 
-  public Message mapFrom(MessageDto messageDto) {
+  public Mono<Message> mapFrom(MessageDto messageDto) {
     final var id = Optional.ofNullable(messageDto.getId())
         .map(UUID::fromString)
         .orElse(null);
@@ -40,17 +42,22 @@ public class MessageToDtoMapper {
             .toLocalDateTime())
         .orElse(null);
 
-    return Message.builder()
-        .id(id)
-        .time(time)
-        .user(messageDto.getUser())
-        .content(messageDto.getContent())
-        .build();
+    final var message = Message.builder()
+      .id(id)
+      .time(time)
+      .user(messageDto.getUser())
+      .content(messageDto.getContent())
+      .build();
+    return Mono.just(message);
   }
 
-  public Collection<MessageDto> mapAllTo(Collection<Message> messages) {
-    return messages.stream()
-        .map(this::mapTo)
-        .toList();
+  public Flux<MessageDto> mapAllTo(Flux<Message> messages) {
+    return messages
+        .flatMap(this::mapTo);
+  }
+
+  public Flux<Message> mapAllFrom(Flux<MessageDto> messageDtos) {
+    return messageDtos
+      .flatMap(this::mapFrom);
   }
 }

@@ -7,8 +7,20 @@ services:
     mem_limit: 256m
     mem_reservation: 128m
     ports:
-      - 8082:8082
+      - 8082:8081
     environment:
       # This environment variable accepts values between 0 and 1 (inclusive) to 
       # define the chance for the service to return an HTTP status 500 - Internal server error.
       - RESPONSE_ERROR_RATIO=0
+      - MONGO_HOST=mongo
+      - PORT=8082
+    profiles: [all]
+  mongo:
+    image: mongo:6.0.17
+    restart: on-failure
+    ports:
+      - 27018:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    profiles: [infrastructure, all]

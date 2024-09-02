@@ -1,8 +1,8 @@
 package com.github.marceloleite2604.chat.domain.message;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -10,16 +10,16 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@Entity
+@Document("messages")
 @NoArgsConstructor
 public class Message {
 
-    @Id
-    private UUID id;
+  @Id
+  private UUID id;
 
-    private LocalDateTime time;
+  private LocalDateTime time;
 
-    private String user;
+  private String user;
 
-    private String content;
+  private String content;
 }

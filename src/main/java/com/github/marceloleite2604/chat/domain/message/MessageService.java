@@ -2,10 +2,10 @@ package com.github.marceloleite2604.chat.domain.message;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -14,38 +14,38 @@ public class MessageService {
 
   private final MessageRepository messageRepository;
 
-  public Message save(Message message) {
+  public Mono<Message> save(Message message) {
 
     final var messageToBePersisted = message.toBuilder()
-        .id(UUID.randomUUID())
-        .time(LocalDateTime.now())
-        .build();
+      .id(UUID.randomUUID())
+      .time(LocalDateTime.now())
+      .build();
 
     return messageRepository.save(messageToBePersisted);
   }
 
-  public Optional<Message> findById(UUID id) {
+  public Mono<Message> findById(UUID id) {
     return messageRepository.findById(id);
   }
 
-  public Collection<Message> findAll() {
+  public Flux<Message> findAll() {
     return messageRepository.findAll();
   }
 
-  public Optional<Message> update(UUID id, Message updatedMessage) {
+  public Mono<Message> update(UUID id, Message updatedMessage) {
     return messageRepository.findById(id)
-        .map(persistedMessage -> merge(persistedMessage, updatedMessage))
-        .map(messageRepository::save);
+      .map(persistedMessage -> merge(persistedMessage, updatedMessage))
+      .flatMap(messageRepository::save);
   }
 
-  private Message merge(Message persistedMessage, Message updatedMessage) {
-    return persistedMessage.toBuilder()
-        .content(updatedMessage.getContent())
-        .time(LocalDateTime.now())
-        .build();
+  private Message merge(Message targetMessage, Message incomingMessage) {
+    return targetMessage.toBuilder()
+      .content(incomingMessage.getContent())
+      .time(LocalDateTime.now())
+      .build();
   }
 
-  public void delete(UUID id) {
-    messageRepository.deleteById(id);
+  public Mono<Void> delete(UUID id) {
+    return messageRepository.deleteById(id);
   }
 }
