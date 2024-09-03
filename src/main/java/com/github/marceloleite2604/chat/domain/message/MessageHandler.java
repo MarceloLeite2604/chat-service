@@ -2,14 +2,17 @@ package com.github.marceloleite2604.chat.domain.message;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilderFactory;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 
@@ -53,12 +56,13 @@ public class MessageHandler {
         .build());
   }
 
-  public Mono<ServerResponse> retrieveAll(ServerRequest serverRequest) {
+  public Mono<ServerResponse> retrieveAll(ServerRequest ignoredServerRequest) {
 
     final var messageDtoFlux = messageService.findAll()
       .flatMap(messageToDtoMapper::mapTo);
 
     return ServerResponse.ok()
+      .contentType(MediaType.APPLICATION_NDJSON)
       .body(messageDtoFlux, MessageDto.class);
   }
 

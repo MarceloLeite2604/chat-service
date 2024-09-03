@@ -1,27 +1,29 @@
 #!/bin/sh
 
-set -e;
+# set -e;
 
-set \
-  java.base \
-  java.compiler \
-  java.desktop \
-  java.instrument \
-  java.management \
-  java.net.http \
-  java.prefs \
-  java.rmi \
-  java.scripting \
-  java.security.jgss \
-  java.sql.rowset \
-  jdk.jfr \
-  jdk.net \
-  jdk.unsupported;
+# set \
+#   java.base \
+#   java.compiler \
+#   java.desktop \
+#   java.instrument \
+#   java.management \
+#   java.net.http \
+#   java.prefs \
+#   java.rmi \
+#   java.scripting \
+#   java.security.jgss \
+#   java.sql.rowset \
+#   jdk.jfr \
+#   jdk.net \
+#   jdk.unsupported;
 
-IFS=",";
-add_modules_value=$*
-readonly add_modules_value;
-IFS=" "
+# IFS=",";
+# add_modules_value=$*
+# readonly add_modules_value;
+# IFS=" "
+
+add_modules_value=$(cat jre-module-dependencies.tmp)
 
 if [ -n "$JAVA_HOME"  ];
 then
